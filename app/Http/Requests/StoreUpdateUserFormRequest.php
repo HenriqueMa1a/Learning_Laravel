@@ -21,12 +21,18 @@ class StoreUpdateUserFormRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        // como pegar o id do usuário?
+        // dd($this->segment(n)); vou pegar o n parâmetro
+        // dd($this->id)
+
+        $id= $this->id ?? ''; // para casos de psgl não dá problema com o null => ''
+
+        $rules = [
             'name' => 'required|string|max:255|min:3',
             'email' => [
                 'required',
                 'email',
-                'unique:users',
+                "unique:users,email,{$id},id", //aspas duplas?
             ],
             'password' => [
                 'required',
@@ -34,5 +40,13 @@ class StoreUpdateUserFormRequest extends FormRequest
                 'max:15',
             ]
         ];
+
+        if($this->isMethod('PUT'))
+            $rules['password'] = [
+                'nullable',
+                'min:6',
+                'max:15',
+            ];
+        return $rules;
     }
 }
